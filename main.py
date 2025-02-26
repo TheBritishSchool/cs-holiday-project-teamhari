@@ -50,7 +50,7 @@ def login():
             login_user(user_obj)
             return redirect(url_for('home'))
         else:
-            return "Invalid credentials, try again."
+            return render_template('login.html')
 
     return render_template('login.html')
 
@@ -81,6 +81,6 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-# Run the Flask app
+#incase of import and to run the app
 if __name__ == '__main__':
     app.run(debug=True)
