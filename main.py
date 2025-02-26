@@ -83,6 +83,20 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
+@app.route('/RequestTutor',methods=['GET', 'POST'])
+def RequestTutor():
+    if request.method == 'POST':
+        subject = request.form['subject']
+        description = request.form['description']
+        cur = mysql.connection.cursor() 
+        cur.execute("INSERT INTO TutorRequests (subject, description) VALUES (%s, %s)", (subject, description))
+        mysql.connection.commit()
+        cur.close()
+
+        return redirect(url_for('RequestTutor'))
+
+    return render_template('RequestTutor.html')
+
 # Run the Flask app
 if __name__ == '__main__':
     app.run(debug=True)
