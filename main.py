@@ -50,7 +50,7 @@ def login():
             login_user(user_obj)
             return redirect(url_for('home'))
         else:
-            return render_template('login.html')
+            return "Invalid credentials, try again."
 
     return render_template('login.html')
 
@@ -72,18 +72,13 @@ def register():
 
     return render_template('register.html')
 
-@app.route('/home')
-@login_required
-def home():
-    return render_template('home.html', username=current_user.username)
-
 @app.route('/RequestTutor',methods=['GET', 'POST'])
 def RequestTutor():
     if request.method == 'POST':
         subject = request.form['subject']
         description = request.form['description']
         cur = mysql.connection.cursor() 
-        cur.execute("INSERT INTO TutorRequests (subject, description) VALUES (%s, %s)", (subject, description))
+        cur.execute("INSERT INTO TutorReqests (subject, description) VALUES (%s, %s)", (subject, description))
         mysql.connection.commit()
         cur.close()
 
@@ -91,6 +86,10 @@ def RequestTutor():
 
     return render_template('RequestTutor.html')
 
+@app.route('/home')
+@login_required
+def home():
+    return render_template('home.html', username=current_user.username)
 
 @app.route('/logout')
 @login_required
