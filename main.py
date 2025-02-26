@@ -56,6 +56,7 @@ def login():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -65,6 +66,7 @@ def register():
         cur.execute("INSERT INTO users (username, password_hash) VALUES (%s, %s)", (username, hashed_password))
         mysql.connection.commit()
         cur.close()
+        
 
         return redirect(url_for('login'))
 
