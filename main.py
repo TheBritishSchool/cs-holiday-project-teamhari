@@ -77,6 +77,21 @@ def register():
 def home():
     return render_template('home.html', username=current_user.username)
 
+@app.route('/RequestTutor',methods=['GET', 'POST'])
+def RequestTutor():
+    if request.method == 'POST':
+        subject = request.form['subject']
+        description = request.form['description']
+        cur = mysql.connection.cursor() 
+        cur.execute("INSERT INTO TutorRequests (subject, description) VALUES (%s, %s)", (subject, description))
+        mysql.connection.commit()
+        cur.close()
+
+        return redirect(url_for('RequestTutor'))
+
+    return render_template('RequestTutor.html')
+
+
 @app.route('/logout')
 @login_required
 def logout():
