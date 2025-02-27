@@ -6,10 +6,42 @@
     <form action="/register" method="POST">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>
-        <br>
+        <br>    
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required>
         <br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <br>
+        <label for="dob">Date of Birth:</label>
+        <input type="date" id="dob" name="dob" required>
+        <br>
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender" required>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+        </select>
+        <br>  
+        <label for="year">Year Group:</label>
+        <select id="year" name="year" required>
+            <option value="7">Year 7</option>
+            <option value="8">Year 8</option>
+            <option value="9">Year 9</option>
+            <option value="10">Year 10</option>
+            <option value="11">Year 11</option>
+            <option value="12">Year 12</option>
+            <option value="13">Year 13</option>
+        </select>
+        <br>  
+        <label for="house">House:</label>
+        <select id="house" name="house" required>
+            <option value="Annapurna">Annapurna</option>
+            <option value="Dhaulagiri">Dhaulagiri</option>
+            <option value="Kanchenjunga">Kanchenjunga</option>
+            <option value="Makalu">Makalu</option>
+        </select>
+        <br>  
         <button type="submit">Register</button>
     </form>
     <p>Already have an account? <a href="/login">Login</a></p>
