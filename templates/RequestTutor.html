@@ -1,41 +1,35 @@
 {% extends "base.html" %}
-{% block title %}RequestTutor{% endblock %}
-{% block content %}
-<head>
-    <title>Request tutor</title>
-    
-    <link rel="stylesheet" href="./styles.css">
-</head>
-<body>
-    <div class="container">
-    <h1>Request a tutor</h1>
-    <form action = "/RequestTutor" method = "POST">
-        <label for = "subject">Subject:</label>
-        <select id = "subject" name = "subject">     
-            <option value = "Mathematics">Mathematics</option>
-            <option value = "Computer science">Computer science</option>
-            <option value = "Physics">Physics</option>
-            <option value = "Chemistry">Chemistry</option>
-            <option value = "Biology">Biology</option>
-            <option value = "GeneralScience(Y9 and under)">GeneralScience(Y9 and under)</option>
-            <option value = "Economics">Economics</option>
-            <option value = "Buisness">Buisness</option>
-            <option value = "History">History</option>
-            <option value = "Geography">Geography</option>
-            <option value = "Media">Media</option>
-            <option value = "Drama">Drama</option>
-            <option value = "Design and technology">Design and technology</option>
-            <option value = "Art">Art</option>
-            <option value = "Music">Music</option>
-            <option value = "English Literature">English Literature</option>
-            <option value = "English Language">English Language</option>
-        </select>
-        <label for = "description">Description</label>
-        <input type = "text" id = "description" name = "description">
-        <input type = "submit">
-    </form>
-    </div>
-    
-</body>
+{% block title %}Request Tutor{% endblock %}
 
+{% block content %}
+<div class="container">
+    <h1>Request a Tutor</h1>
+    <form action="{{ url_for('requests_bp.RequestTutor') }}" method="POST">
+        <label for="subject">Subject:</label>
+        <select id="subject" name="subject">     
+            <option value="Mathematics">Mathematics</option>
+            <option value="Computer science">Computer Science</option>
+            <option value="Physics">Physics</option>
+            <option value="Chemistry">Chemistry</option>
+            <option value="Biology">Biology</option>
+            <option value="GeneralScience(Y9 and under)">General Science (Y9 and under)</option>
+            <option value="Economics">Economics</option>
+            <option value="Business">Business</option>
+            <option value="History">History</option>
+            <option value="Geography">Geography</option>
+            <option value="Media">Media</option>
+            <option value="Drama">Drama</option>
+            <option value="Design and technology">Design and Technology</option>
+            <option value="Art">Art</option>
+            <option value="Music">Music</option>
+            <option value="English Literature">English Literature</option>
+            <option value="English Language">English Language</option>
+        </select>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" rows="4" required></textarea>
+
+        <button type="submit">Submit</button>
+    </form>
+</div>
 {% endblock %}
