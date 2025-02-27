@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for
 from extensions import mysql, bcrypt, login_manager
 from blueprints.auth import auth, User
 from blueprints.requests import requests_bp
@@ -50,18 +50,31 @@ def index():
 @app.route('/home')
 @login_required
 def home():
-    # Get all tutor requests
+    # Get the current page number, default to 1 if not specified
+    page = request.args.get('page', 1, type=int)
+    per_page = 10  # Number of requests per page
+    offset = (page - 1) * per_page
+    
+    # Get the total number of tutor requests
     cur = mysql.connection.cursor()
+    cur.execute('SELECT COUNT(*) FROM TutorRequests')
+    total_requests = cur.fetchone()[0]
+    
+    # Get the tutor requests for the current page
     cur.execute('''
     SELECT r.id, r.subject, r.description, r.created_at, u.username 
     FROM TutorRequests r 
     JOIN users u ON r.user_id = u.id
     ORDER BY r.created_at DESC
-    ''')
+    LIMIT %s OFFSET %s
+    ''', (per_page, offset))
     requests = cur.fetchall()
     cur.close()
-
-    return render_template('home.html', username=current_user.username, requests=requests)
+    
+    # Calculate the total number of pages
+    total_pages = (total_requests + per_page - 1) // per_page
+    
+    return render_template('home.html', username=current_user.username, requests=requests, page=page, total_pages=total_pages)
 
 # Function to initialize database tables
 def init_db():

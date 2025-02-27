@@ -1,8 +1,31 @@
 {% extends "base.html" %}
+
 {% block content %}
 
     <h2>Welcome, {{ username }}!</h2>
     <p>This is your homepage.</p>
     <a href="/logout">Logout</a>
+
+    <h2>Tutor Requests</h2>
+    <ul>
+        {% for request in requests %}
+            <li>
+                <strong>Subject:</strong> {{ request[1] }} <br>
+                <strong>Description:</strong> {{ request[2] }} <br>
+                <strong>Requested by:</strong> {{ request[4] }} <br>
+                <strong>Created at:</strong> {{ request[3] }}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div>
+        {% if page > 1 %}
+            <a href="{{ url_for('home', page=page-1) }}">Previous</a>
+        {% endif %}
+        
+        {% if page < total_pages %}
+            <a href="{{ url_for('home', page=page+1) }}">Next</a>
+        {% endif %}
+    </div>
 
 {% endblock %}
