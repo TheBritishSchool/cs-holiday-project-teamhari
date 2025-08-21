@@ -3,6 +3,8 @@ from extensions import mysql, bcrypt, login_manager
 from blueprints.auth import auth, User
 from blueprints.requests import requests_bp
 from flask_login import login_required, current_user
+from flask_mail import Mail, Message
+from flask_login import UserMixin
 
 # Database credentials
 HOST = 'bkfanudhuvqg1xriyhdm-mysql.services.clever-cloud.com'
@@ -23,6 +25,15 @@ app.config['MYSQL_PASSWORD'] = PASSWORD
 app.config['MYSQL_DB'] = DATABASE
 app.config['MYSQL_PORT'] = PORT
 
+app.config['MAIL_SERVER'] = 'localhost'
+app.config['MAIL_PORT'] = 1025
+app.config['MAIL_USE_TLS'] = None
+app.config['MAIL_USERNAME'] = None      
+app.config['MAIL_PASSWORD'] = None      
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = False  
+mail = Mail(app)
+
 # Initialize extensions
 mysql.init_app(app)
 bcrypt.init_app(app)
@@ -33,6 +44,12 @@ login_manager.login_view = "login"
 app.register_blueprint(auth, url_prefix='/auth')
 app.register_blueprint(requests_bp, url_prefix='/requests')
 
+class User(UserMixin):
+    def __init__(self, id, username, email=None):
+        self.id = id
+        self.username = username
+        self.email = email
+
 @login_manager.user_loader
 def load_user(user_id):
     cur = mysql.connection.cursor()
@@ -41,7 +58,7 @@ def load_user(user_id):
     cur.close()                                 
 
     if user:
-        return User(id=user[0], username=user[1])
+        return User(id=user[0], username=user[1],email=user[2])
     return None
 
 @app.route('/')
@@ -87,6 +104,7 @@ def init_db():
     CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
         username VARCHAR(50) UNIQUE NOT NULL,
+        email VARCHAR(100) UNIQUE NOT NULL,
         password_hash VARCHAR(255) NOT NULL
     )
     ''')
@@ -106,8 +124,36 @@ def init_db():
     mysql.connection.commit()
     cur.close()
 
+@app.route("/help/<int:request_id>", methods=["POST"])
+def help_request(request_id):
+    helper_message = request.form['message']  # message from textarea
+
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT u.email, r.subject FROM TutorRequests r JOIN users u ON r.user_id = u.id WHERE r.id=%s", (request_id,))
+    request_data = cur.fetchone()
+    cur.close()
+
+    if request_data:
+        student_email, subject = request_data
+
+        msg = Message(
+            subject=f"Help offered for your {subject} request!",
+            sender="noreply@example.com",
+            recipients=[student_email]
+        )
+        msg.body = f"A tutor has offered to help you!\n\nMessage:\n{helper_message}"
+        
+        mail.send(msg)
+
+        return "Your message was sent to the student!"
+    else:
+        return "Request not found."
+
+
 # Run the Flask app
 if __name__ == '__main__':
     with app.app_context():
         init_db()  # Initialize database on startup
     app.run(debug=True)
+
+

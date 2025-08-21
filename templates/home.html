@@ -13,7 +13,13 @@
                 <strong>Description:</strong> {{ request[2] }} <br>
                 <strong>Requested by:</strong> {{ request[4] }} <br>
                 <strong>Created at:</strong> {{ request[3] }}
+            
+              <form action="{{ url_for('help_request', request_id=request[0]) }}" method="post">
+                    <textarea name="message" placeholder="Write your message here..." required></textarea><br>
+                    <button type="submit">Help</button>
+              </form>
             </li>
+  </div>
         {% endfor %}
     </ul>
 
