@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container">
     <h1>Request a Tutor</h1>
-    <form action="{{ url_for('requests_bp.RequestTutor') }}" method="POST">
+    <form action="{{ url_for('requests_bp.RequestTutor') }}" method="POST" enctype="multipart/form-data">
         <label for="subject">Subject:</label>
         <select id="subject" name="subject">     
             <option value="Mathematics">Mathematics</option>
@@ -28,6 +28,9 @@
 
         <label for="description">Description:</label>
         <textarea id="description" name="description" rows="4" required></textarea>
+
+        <label for="image">Attach an image:</label>
+        <input type = "file" name = "image">
 
         <button type="submit">Submit</button>
     </form>

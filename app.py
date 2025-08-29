@@ -12,6 +12,7 @@ USER = 'uraexz57rm9ktsv8'
 PASSWORD = 'XXeJ8prWdlq5SfsiFxwy'
 DATABASE = 'bkfanudhuvqg1xriyhdm'
 PORT = 3306
+UPLOAD_FOLDER = 'static/uploads'
 
 app = Flask(__name__)
 
@@ -33,6 +34,8 @@ app.config['MAIL_PASSWORD'] = None
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = False  
 mail = Mail(app)
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Initialize extensions
 mysql.init_app(app)
@@ -80,7 +83,7 @@ def home():
     
     # Get the tutor requests for the current page
     cur.execute('''
-    SELECT r.id, r.subject, r.description, r.created_at, u.username 
+    SELECT r.id, r.subject, r.description, r.created_at, u.username,r.image_path 
     FROM TutorRequests r 
     JOIN users u ON r.user_id = u.id
     ORDER BY r.created_at DESC
