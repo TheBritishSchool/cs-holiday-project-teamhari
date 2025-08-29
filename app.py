@@ -26,13 +26,14 @@ app.config['MYSQL_PASSWORD'] = PASSWORD
 app.config['MYSQL_DB'] = DATABASE
 app.config['MYSQL_PORT'] = PORT
 
-app.config['MAIL_SERVER'] = 'localhost'
-app.config['MAIL_PORT'] = 1025
-app.config['MAIL_USE_TLS'] = None
-app.config['MAIL_USERNAME'] = None      
-app.config['MAIL_PASSWORD'] = None      
-app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False  
+app.config['MAIL_USERNAME'] = "tbsforums@gmail.com"    
+app.config['MAIL_PASSWORD'] = "cxnc avvt tauv wrwd"      
+
+
 mail = Mail(app)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -141,7 +142,7 @@ def help_request(request_id):
 
         msg = Message(
             subject=f"Help offered for your {subject} request!",
-            sender="noreply@example.com",
+            sender=app.config['MAIL_USERNAME'],
             recipients=[student_email]
         )
         msg.body = f"A student replied to your request!\n\nMessage:\n{helper_message}"
