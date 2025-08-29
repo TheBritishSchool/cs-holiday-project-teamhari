@@ -141,7 +141,7 @@ def help_request(request_id):
             sender="noreply@example.com",
             recipients=[student_email]
         )
-        msg.body = f"A tutor has offered to help you!\n\nMessage:\n{helper_message}"
+        msg.body = f"A student replied to your request!\n\nMessage:\n{helper_message}"
         
         mail.send(msg)
 

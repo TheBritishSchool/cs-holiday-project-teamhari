@@ -34,11 +34,12 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        email = request.form['email']
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
         cur = mysql.connection.cursor()
         try:
-            cur.execute("INSERT INTO users (username, password_hash) VALUES (%s, %s)", (username, hashed_password))
+            cur.execute("INSERT INTO users (username, password_hash,email) VALUES (%s, %s,%s)", (username, hashed_password,email))
             mysql.connection.commit()
             return redirect(url_for('auth.login'))
         except Exception as e:
