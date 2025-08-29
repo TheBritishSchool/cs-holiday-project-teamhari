@@ -78,13 +78,13 @@ def home():
     
     # Get the total number of tutor requests
     cur = mysql.connection.cursor()
-    cur.execute('SELECT COUNT(*) FROM TutorRequests')
+    cur.execute('SELECT COUNT(*) FROM Requesthelp')
     total_requests = cur.fetchone()[0]
     
-    # Get the tutor requests for the current page
+    # Get the help requests for the current page
     cur.execute('''
     SELECT r.id, r.subject, r.description, r.created_at, u.username,r.image_path 
-    FROM TutorRequests r 
+    FROM Requesthelp r 
     JOIN users u ON r.user_id = u.id
     ORDER BY r.created_at DESC
     LIMIT %s OFFSET %s
@@ -112,9 +112,9 @@ def init_db():
     )
     ''')
 
-    # Create TutorRequests table
+    # Create Requesthelp table
     cur.execute('''
-    CREATE TABLE IF NOT EXISTS TutorRequests (
+    CREATE TABLE IF NOT EXISTS Requesthelp (
         id INT AUTO_INCREMENT PRIMARY KEY,
         subject VARCHAR(100) NOT NULL,
         description TEXT NOT NULL,
@@ -132,7 +132,7 @@ def help_request(request_id):
     helper_message = request.form['message']  # message from textarea
 
     cur = mysql.connection.cursor()
-    cur.execute("SELECT u.email, r.subject FROM TutorRequests r JOIN users u ON r.user_id = u.id WHERE r.id=%s", (request_id,))
+    cur.execute("SELECT u.email, r.subject FROM Requesthelp r JOIN users u ON r.user_id = u.id WHERE r.id=%s", (request_id,))
     request_data = cur.fetchone()
     cur.close()
 

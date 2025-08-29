@@ -15,9 +15,9 @@ def allowed_file(filename):
 
 requests_bp = Blueprint('requests_bp', __name__)
 
-@requests_bp.route('/RequestTutor', methods=['GET', 'POST'])
+@requests_bp.route('/Requesthelp', methods=['GET', 'POST'])
 @login_required
-def RequestTutor():
+def Requesthelp():
     if request.method == 'POST':
         subject = request.form['subject']
         description = request.form['description']
@@ -29,13 +29,13 @@ def RequestTutor():
 
         cur = mysql.connection.cursor()
         try:
-            cur.execute("INSERT INTO TutorRequests (subject, description, user_id,image_path) VALUES (%s, %s, %s,%s)",
+            cur.execute("INSERT INTO Requesthelp (subject, description, user_id,image_path) VALUES (%s, %s, %s,%s)",
                         (subject, description, current_user.id,image_filename))
             mysql.connection.commit()
             return redirect(url_for('main.home'))
         except Exception as e:
-            return render_template('RequestTutor.html', error=f"Request failed: {str(e)}")
+            return render_template('Requesthelp.html', error=f"Request failed: {str(e)}")
         finally:
             cur.close()
 
-    return render_template('RequestTutor.html')
+    return render_template('Requesthelp.html')
