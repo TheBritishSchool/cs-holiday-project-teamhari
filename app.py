@@ -91,12 +91,49 @@ def home():
     LIMIT %s OFFSET %s
     ''', (per_page, offset))
     requests = cur.fetchall()
+    
+    request_ids = [req[0] for req in requests]
+    if request_ids:  # check if list is not empty
+        format_strings = ','.join(['%s'] * len(request_ids))
+        cur.execute(f'''
+            SELECT re.request_id, re.message, re.created_at, u.username
+            FROM Replies re
+            JOIN users u ON re.user_id = u.id
+            WHERE re.request_id IN ({format_strings})
+            ORDER BY re.created_at ASC
+        ''', tuple(request_ids))
+        all_replies = cur.fetchall()
+    else:
+        all_replies = []
+    
+    replies_dict = {}
+    for reply in all_replies:
+        req_id = reply[0]
+        if req_id not in replies_dict:
+            replies_dict[req_id] = []
+        replies_dict[req_id].append(reply)
+
+    requests_with_replies = []
+    for req in requests:
+        req_id = req[0]
+        requests_with_replies.append({
+            "id": req[0],
+            "subject": req[1],
+            "description": req[2],
+            "created_at": req[3],
+            "username": req[4],
+            "image_path": req[5],
+            "replies": replies_dict.get(req_id, [])  # get all replies for this request
+    })
+    
+    
+
     cur.close()
     
-    # Calculate the total number of pages
+   
     total_pages = (total_requests + per_page - 1) // per_page
     
-    return render_template('home.html', username=current_user.username, requests=requests, page=page, total_pages=total_pages)
+    return render_template('home.html', username=current_user.username, requests=requests_with_replies, page=page, total_pages=total_pages)
 
 # Function to initialize database tables
 def init_db():
@@ -125,33 +162,60 @@ def init_db():
     )
     ''')
 
+    cur.execute('''
+    CREATE TABLE IF NOT EXISTS Replies (
+        id INT AUTO_INCREMENT PRIMARY KEY, 
+        user_id INT, 
+        request_id INT, 
+        message TEXT NOT NULL, 
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id),
+        FOREIGN KEY (request_id) REFERENCES Requesthelp(id)
+        
+    )
+    ''')
+
     mysql.connection.commit()
     cur.close()
 
-@app.route("/help/<int:request_id>", methods=["POST"])
-def help_request(request_id):
-    helper_message = request.form['message']  # message from textarea
-
+    
+@app.route("/replies/<int:request_id>",methods = ["POST"])
+@login_required
+def reply_request(request_id):
+    message = request.form["message"]
     cur = mysql.connection.cursor()
-    cur.execute("SELECT u.email, r.subject FROM Requesthelp r JOIN users u ON r.user_id = u.id WHERE r.id=%s", (request_id,))
-    request_data = cur.fetchone()
+    cur.execute(
+        "INSERT INTO Replies (user_id,request_id,message) VALUES (%s,%s,%s)",(current_user.id,request_id,message) 
+    )
+    mysql.connection.commit()
+
+    cur.execute('''
+        SELECT u.email, u.username
+        FROM Requesthelp r
+        JOIN users u on r.user_id = u.id
+        where r.id = (%s)
+    ''',(request_id,))
+    creator = cur.fetchone()
     cur.close()
 
-    if request_data:
-        student_email, subject = request_data
+    if creator:
+        recipient_email = creator[0]
+        recipient_username = creator[1]
+        if recipient_email and recipient_email != current_user.email: 
+            try: 
+                from app import mail
+                msg = Message(
+                    subject = "New reply to your request on the TBS forum",
+                    sender = app.config['MAIL_USERNAME'],
+                    recipients = [recipient_email]
+                )
+                msg.body = f"Hi {recipient_username},\n\n{current_user.username} replied to your request:\n\n\"{message}\"\n\nOpen the site to reply."
+                mail.send(msg)
+            except Exception as e:
+                print("Warning: failed to send email notification:", e)
+    
+    return redirect(url_for('home'))
 
-        msg = Message(
-            subject=f"Help offered for your {subject} request!",
-            sender=app.config['MAIL_USERNAME'],
-            recipients=[student_email]
-        )
-        msg.body = f"A student replied to your request!\n\nMessage:\n{helper_message}"
-        
-        mail.send(msg)
-
-        return "Your message was sent to the student!"
-    else:
-        return "Request not found."
 
 
 # Run the Flask app

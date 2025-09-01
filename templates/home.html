@@ -7,21 +7,35 @@
 
     <h2>Help Requests</h2>
     <ul>
-        {% for request in requests %}
-            <li>
-                <strong>Subject:</strong> {{ request[1] }} <br>
-                <strong>Description:</strong> {{ request[2] }} <br>
-                <strong>Requested by:</strong> {{ request[4] }} <br>
-                <strong>Created at:</strong> {{ request[3] }}
+        {% for req in requests%}
+            <li style="margin-bottom:20px; padding:10px; border:1px solid #ccc; border-radius:5px;">
+                <strong>Subject:</strong> {{ req.subject }} <br>
+                <strong>Description:</strong> {{ req.description }} <br>
+                <strong>Requested by:</strong> {{ req.username }} <br>
+                <strong>Created at:</strong> {{ req.created_at }}<br>
 
-                {% if request[5] %} 
-                <img src="{{ url_for('static', filename='uploads/' ~ request[5]) }}" 
+                {% if req.image_path %} 
+                <img src="{{ url_for('static', filename='uploads/' ~ req.image_path) }}" 
                  alt="Request Image" style="max-width:300px; max-height:300px;"><br>
                 {% endif %}
+
+                <div style="margin-left:20px; margin-top:10px;">
+                <strong>Replies:</strong>
+                {% if req.replies %}
+                    {% for reply in req.replies %}
+                        <div style="border:1px solid #eee; padding:5px; margin-bottom:5px; border-radius:3px;">
+                            <strong>{{ reply[2] }}:</strong> {{ reply[0] }} <br>
+                            <em>{{ reply[1] }}</em>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No replies yet.</p>
+                {% endif %}
+                </div>
             
-              <form action="{{ url_for('help_request', request_id=request[0]) }}" method="post">
-                    <textarea name="message" placeholder="Write your message here..." required></textarea><br>
-                    <button type="submit">Help</button>
+              <form action="{{ url_for('reply_request', request_id=req.id) }}" method="POST" style="margin-top:10px;">
+                <textarea name="message" placeholder="Write your reply..." required style="width:100%; height:60px;"></textarea><br>
+                <button type="submit">Reply</button>
               </form>
             </li>
   </div>
