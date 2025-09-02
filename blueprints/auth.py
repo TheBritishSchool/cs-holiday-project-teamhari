@@ -33,8 +33,8 @@ def login():
 def register():
     if request.method == 'POST':
         username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
-     passwordAuth
         confirm = request.form['confirm_password']
 
         if password != confirm:
@@ -42,7 +42,7 @@ def register():
         
         if len(password) < 8 or not any(char.isdigit() for char in password) or not any(char.isalpha() for char in password):
             return render_template('register.html', error="Password must be at least 8 characters long and include both letters and numbers")
-       main
+       
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
         cur = mysql.connection.cursor()
