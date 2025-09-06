@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Apply to be a tutor{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Apply</h1>
+    <form action="{{ url_for('applytutor') }}" method="POST" enctype="multipart/form-data">
+
+        <label for="BIO">About You:</label><br>
+        <textarea name="BIO" required style="width:100%; height:80px;"></textarea><br><br>
+
+        <label for="subjects">Subjects you can teach:</label><br>
+        <input type="text" name="subjects" placeholder="e.g. Math, Physics" required><br><br>
+
+        <label for="image">Attach an image of yourself:</label>
+        <input type = "file" name = "image">
+
+        <button type="submit">Submit</button>
+    </form>
+</div>
+{% endblock %}

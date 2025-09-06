@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Your Tutor Profile</h2>
+
+{% if profile[5] %}
+    <img src="{{ url_for('static', filename='uploads/' ~ profile[5] )}}" 
+         alt="Tutor Profile Picture" style="max-width:200px; border-radius:10px;">
+{% endif %}
+
+<p><strong>Name:</strong> {{ current_user.username }}</p>
+<p><strong>Bio:</strong> {{ profile[2] }}</p>
+<p><strong>Subjects:</strong> {{ profile[4] }}</p>
+<p><strong>Email:</strong> {{ profile[3]}}</p>
+
+
+{% endblock %}

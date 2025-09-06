@@ -5,6 +5,8 @@ from blueprints.requests import requests_bp
 from flask_login import login_required, current_user
 from flask_mail import Mail, Message
 from flask_login import UserMixin
+import os
+from werkzeug.utils import secure_filename
 
 # Database credentials
 HOST = 'bkfanudhuvqg1xriyhdm-mysql.services.clever-cloud.com'
@@ -49,7 +51,7 @@ app.register_blueprint(auth, url_prefix='/auth')
 app.register_blueprint(requests_bp, url_prefix='/requests')
 
 class User(UserMixin):
-    def __init__(self, id, username, email=None):
+    def __init__(self, id, username, email):
         self.id = id
         self.username = username
         self.email = email
@@ -62,7 +64,7 @@ def load_user(user_id):
     cur.close()                                 
 
     if user:
-        return User(id=user[0], username=user[1],email=user[2])
+        return User(id=user[0], username=user[1],email=user[3])
     return None
 
 @app.route('/')
@@ -174,6 +176,18 @@ def init_db():
         
     )
     ''')
+    
+    cur.execute('''
+    CREATE TABLE IF NOT EXISTS Tutorprofiles(
+        user_id INT, 
+        username varchar(50), 
+        bio MEDIUMTEXT, 
+        email varchar(100), 
+        subjects TEXT, 
+        userimage_path TEXT, 
+        FOREIGN KEY (user_id) REFERENCES users(id)
+    )       
+    ''')
 
     mysql.connection.commit()
     cur.close()
@@ -216,7 +230,45 @@ def reply_request(request_id):
     
     return redirect(url_for('home'))
 
+@app.route("/tutor")
+@login_required
+def tutor(): 
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM Tutorprofiles WHERE user_id = %s ",(current_user.id,))
+    profile = cur.fetchone()
+    cur.close()
+    if profile: 
+        return render_template("Tutorprofile.html",profile = profile)
 
+    else : 
+        return render_template("applytutor.html")
+    
+@app.route("/applytutor",methods  = ["POST"])
+@login_required
+def applytutor():
+    bio = request.form["BIO"]
+    subjects = request.form["subjects"]
+    image = request.files.get('image')
+    image_filename = None
+    if image and image.filename != "":
+        image_filename = secure_filename(image.filename)
+        image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
+    
+    cur = mysql.connection.cursor()
+    cur.execute("INSERT INTO Tutorprofiles(user_id,username,bio,email,subjects,userimage_path)  VALUES(%s,%s,%s,%s,%s,%s)",
+                 (current_user.id,current_user.username,bio,current_user.email,subjects,image_filename))
+    mysql.connection.commit()
+    cur.close()
+    return redirect(url_for("tutor"))
+
+@app.route("/tutorprofiles")
+@login_required
+def tutorprofiles(): 
+    cur=mysql.connection.cursor()
+    cur.execute("SELECT * FROM Tutorprofiles")
+    tutors = cur.fetchall()
+    cur.close()
+    return render_template("tutordashboard.html",tutors=tutors)
 
 # Run the Flask app
 if __name__ == '__main__':

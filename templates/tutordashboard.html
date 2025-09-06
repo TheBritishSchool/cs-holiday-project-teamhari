@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Available Tutors</h2>
+{%if tutors%}
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:20px; margin-top:20px;">
+        {% for tutor in tutors %}
+        <div style="border:1px solid #ddd; padding:15px; border-radius:12px; text-align:center; background:#fafafa;">
+            
+            {% if tutor[5] %}
+                <img src="{{ url_for('static', filename='uploads/' ~ tutor[5] )}}" 
+                    alt="Tutor Image" style="width:120px; height:120px; object-fit:cover; border-radius:50%; margin-bottom:10px;">
+            {% else %}
+                <div style="width:120px; height:120px; border-radius:50%; background:#ccc; display:flex; align-items:center; justify-content:center; margin:0 auto 10px;">
+                    <span>No Image</span>
+                </div>
+            {% endif %}
+            
+            <h3>{{ tutor[1] }}</h3>
+            <p><strong>Bio:</strong> {{ tutor[2] }}</p>
+            <p><strong>Subjects:</strong> {{ tutor[4] }}</p>
+            <p><strong>Email:</strong> {{ tutor[3]}}</p>
+            
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>No tutors have signed up yet. Be the first to apply!</p>
+{% endif %}
+{% endblock %}
