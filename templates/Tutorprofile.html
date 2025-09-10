@@ -3,15 +3,26 @@
 {% block content %}
 <h2>Your Tutor Profile</h2>
 
-{% if profile[5] %}
-    <img src="{{ url_for('static', filename='uploads/' ~ profile[5] )}}" 
-         alt="Tutor Profile Picture" style="max-width:200px; border-radius:10px;">
-{% endif %}
+<div class="card" style="display: flex; align-items: stretch; gap: 20px; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 900px; margin: auto;">
 
-<p><strong>Name:</strong> {{ current_user.username }}</p>
-<p><strong>Bio:</strong> {{ profile[2] }}</p>
-<p><strong>Subjects:</strong> {{ profile[4] }}</p>
-<p><strong>Email:</strong> {{ profile[3]}}</p>
+    <!-- Text Section -->
+    <div style="flex: 2; min-width: 0;">
+        <p><strong>Name:</strong> {{ current_user.username }}</p>
+        <p><strong>Bio:</strong> {{ profile[2] }}</p>
+        <p><strong>Subjects:</strong> {{ profile[4] }}</p>
+        <p><strong>Available times:</strong> {{ profile[6] }}</p>
+        <p><strong>Email:</strong> {{ profile[3] }}</p>
+    </div>
 
+    <!-- Image Section -->
+    {% if profile[5] %}
+    <div style="flex: 1; min-width: 200px; display: flex; justify-content: center; align-items: center;">
+        <img src="{{ url_for('static', filename='uploads/' ~ profile[5] )}}" 
+             alt="Tutor Profile Picture" 
+             style="width: 100%; height: auto; border-radius: 10px; object-fit: cover;">
+    </div>
+    {% endif %}
+
+</div>
 
 {% endblock %}

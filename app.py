@@ -185,6 +185,7 @@ def init_db():
         email varchar(100), 
         subjects TEXT, 
         userimage_path TEXT, 
+        timing TEXT, 
         FOREIGN KEY (user_id) REFERENCES users(id)
     )       
     ''')
@@ -248,6 +249,7 @@ def tutor():
 def applytutor():
     bio = request.form["BIO"]
     subjects = request.form["subjects"]
+    timing = request.form["timings"]
     image = request.files.get('image')
     image_filename = None
     if image and image.filename != "":
@@ -255,8 +257,8 @@ def applytutor():
         image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
     
     cur = mysql.connection.cursor()
-    cur.execute("INSERT INTO Tutorprofiles(user_id,username,bio,email,subjects,userimage_path)  VALUES(%s,%s,%s,%s,%s,%s)",
-                 (current_user.id,current_user.username,bio,current_user.email,subjects,image_filename))
+    cur.execute("INSERT INTO Tutorprofiles(user_id,username,bio,email,subjects,userimage_path,timing)  VALUES(%s,%s,%s,%s,%s,%s,%s)",
+                 (current_user.id,current_user.username,bio,current_user.email,subjects,image_filename,timing))
     mysql.connection.commit()
     cur.close()
     return redirect(url_for("tutor"))

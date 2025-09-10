@@ -2,54 +2,55 @@
 
 {% block content %}
 
-    <h2>Welcome, {{ username }}!</h2>
-    <p>This is your homepage.</p>
+<h2>Welcome, {{ username }}!</h2>
+<p>This is your homepage.</p>
 
-    <h2>Help Requests</h2>
-    <ul>
-        {% for req in requests%}
-            <li style="margin-bottom:20px; padding:10px; border:1px solid #ccc; border-radius:5px;">
-                <strong>Subject:</strong> {{ req.subject }} <br>
-                <strong>Description:</strong> {{ req.description }} <br>
-                <strong>Requested by:</strong> {{ req.username }} <br>
-                <strong>Created at:</strong> {{ req.created_at }}<br>
+<h2 class="mt-4">Help Requests</h2>
 
-                {% if req.image_path %} 
-                <img src="{{ url_for('static', filename='uploads/' ~ req.image_path) }}" 
-                 alt="Request Image" style="max-width:300px; max-height:300px;"><br>
-                {% endif %}
+{% if requests %}
+<div class="thread-container">
+    {% for req in requests %}
+    <div class="thread-card">
+        <p class="thread-description">{{ req.description }}</p>
 
-                <div style="margin-left:20px; margin-top:10px;">
-                <strong>Replies:</strong>
-                {% if req.replies %}
-                    {% for reply in req.replies %}
-                        <div style="border:1px solid #eee; padding:5px; margin-bottom:5px; border-radius:3px;">
-                            <strong>{{ reply[2] }}:</strong> {{ reply[0] }} <br>
-                            <em>{{ reply[1] }}</em>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p>No replies yet.</p>
-                {% endif %}
-                </div>
-            
-              <form action="{{ url_for('reply_request', request_id=req.id) }}" method="POST" style="margin-top:10px;">
-                <textarea name="message" placeholder="Write your reply..." required style="width:100%; height:60px;"></textarea><br>
-                <button type="submit">Reply</button>
-              </form>
-            </li>
-  </div>
-        {% endfor %}
-    </ul>
-
-    <div>
-        {% if page > 1 %}
-            <a href="{{ url_for('home', page=page-1) }}">Previous</a>
+        {% if req.image_path %}
+        <div class="thread-image">
+            <img src="{{ url_for('static', filename='uploads/' ~ req.image_path) }}" alt="Request Image">
+        </div>
         {% endif %}
-        
-        {% if page < total_pages %}
-            <a href="{{ url_for('home', page=page+1) }}">Next</a>
+
+        {% if req.replies %}
+        <div class="thread-replies">
+            <strong>Replies:</strong>
+            {% for reply in req.replies %}
+            <div class="reply-card">
+                <strong>{{ reply[3] }}:</strong> {{ reply[1] }}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>No replies yet.</p>
         {% endif %}
+
+
+        <form action="{{ url_for('reply_request', request_id=req.id) }}" method="POST" class="reply-form">
+            <textarea name="message" placeholder="Write your reply..." required></textarea>
+            <button type="submit">Reply</button>
+        </form>
     </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>No requests yet.</p>
+{% endif %}
+
+<div class="pagination mt-4">
+    {% if page > 1 %}
+        <a class="btn btn-outline-primary" href="{{ url_for('home', page=page-1) }}">Previous</a>
+    {% endif %}
+    {% if page < total_pages %}
+        <a class="btn btn-outline-primary" href="{{ url_for('home', page=page+1) }}">Next</a>
+    {% endif %}
+</div>
 
 {% endblock %}
