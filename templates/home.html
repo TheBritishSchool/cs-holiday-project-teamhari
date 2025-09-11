@@ -11,6 +11,8 @@
 <div class="thread-container">
     {% for req in requests %}
     <div class="thread-card">
+        <h2 class = "thread-header"> {{req.username}}</h2>
+        <h5 class = "thread-info"> {{req.created_at}}</h5>
         <p class="thread-description">{{ req.description }}</p>
 
         {% if req.image_path %}

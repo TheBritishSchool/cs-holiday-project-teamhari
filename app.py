@@ -7,6 +7,7 @@ from flask_mail import Mail, Message
 from flask_login import UserMixin
 import os
 from werkzeug.utils import secure_filename
+from flask import flash
 
 # Database credentials
 HOST = 'bkfanudhuvqg1xriyhdm-mysql.services.clever-cloud.com'
@@ -51,10 +52,11 @@ app.register_blueprint(auth, url_prefix='/auth')
 app.register_blueprint(requests_bp, url_prefix='/requests')
 
 class User(UserMixin):
-    def __init__(self, id, username, email):
+    def __init__(self, id, username, email,year):
         self.id = id
         self.username = username
         self.email = email
+        self.year = year 
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -64,7 +66,7 @@ def load_user(user_id):
     cur.close()                                 
 
     if user:
-        return User(id=user[0], username=user[1],email=user[3])
+        return User(id=user[0], username=user[1],email=user[3],year = user[4])
     return None
 
 @app.route('/')
@@ -203,6 +205,7 @@ def reply_request(request_id):
         "INSERT INTO Replies (user_id,request_id,message) VALUES (%s,%s,%s)",(current_user.id,request_id,message) 
     )
     mysql.connection.commit()
+    flash("Successfuly posted reply!")
 
     cur.execute('''
         SELECT u.email, u.username
@@ -256,11 +259,16 @@ def applytutor():
         image_filename = secure_filename(image.filename)
         image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
     
+    if current_user.year < 10 or current_user.year > 13:
+        flash("Only students in Years 10 to 13 can apply to be a tutor.", "error")
+        return redirect(url_for("tutor"))
+    
     cur = mysql.connection.cursor()
     cur.execute("INSERT INTO Tutorprofiles(user_id,username,bio,email,subjects,userimage_path,timing)  VALUES(%s,%s,%s,%s,%s,%s,%s)",
                  (current_user.id,current_user.username,bio,current_user.email,subjects,image_filename,timing))
     mysql.connection.commit()
     cur.close()
+    flash("Successfully made profile!")
     return redirect(url_for("tutor"))
 
 @app.route("/tutorprofiles")

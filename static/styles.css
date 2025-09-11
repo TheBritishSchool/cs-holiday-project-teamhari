@@ -127,7 +127,7 @@ input, select, textarea {
     gap: 15px;
 }
 
-.thread-info h3 {
+.thread-info h5 {
     margin: 0 0 5px 0;
     font-size: 1.25rem;
 }

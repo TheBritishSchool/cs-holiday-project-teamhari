@@ -4,6 +4,7 @@ from extensions import mysql
 import os
 from werkzeug.utils import secure_filename
 from flask import current_app
+from flask import flash
 
 #file path and validation
 
@@ -32,6 +33,7 @@ def Requesthelp():
             cur.execute("INSERT INTO Requesthelp (subject, description, user_id,image_path) VALUES (%s, %s, %s,%s)",
                         (subject, description, current_user.id,image_filename))
             mysql.connection.commit()
+            flash("Succesfully posted request!")
             return redirect(url_for('main.home'))
         except Exception as e:
             return render_template('Requesthelp.html', error=f"Request failed: {str(e)}")
