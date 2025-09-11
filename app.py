@@ -264,7 +264,7 @@ def applytutor():
     subjects = request.form["subjects"]
     timing = request.form["timings"]
     image = request.files.get('image')
-    image_filename = None
+    image_url = None
     if image and image.filename != "":
         upload_result = cloudinary.uploader.upload(image)
         image_url = upload_result['secure_url']
@@ -304,14 +304,11 @@ def editprofile():
         subjects = request.form.get("subjects", profile[4])
         timing = request.form.get("timings", profile[6]) 
         image = request.files.get("image")
-        image_filename = profile[5]  
+        image_url = profile[5]  
 
         if image and image.filename != "":
             upload_result = cloudinary.uploader.upload(image)
             image_url = upload_result['secure_url']
-        else: 
-            flash("invalid file")
-            return redirect("editprofile")
 
         cur.execute("""
             UPDATE Tutorprofiles

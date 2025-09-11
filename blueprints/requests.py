@@ -5,6 +5,7 @@ import os
 from werkzeug.utils import secure_filename
 from flask import current_app
 from flask import flash
+import cloudinary
 
 #file path and validation
 
@@ -23,19 +24,16 @@ def Requesthelp():
         subject = request.form['subject']
         description = request.form['description']
         file = request.files['image']
-        image_filename = None
+        image_url = None
 
         if file and allowed_file(file.filename): 
-            image_filename = secure_filename(file.filename)
-            file.save(os.path.join(current_app.config['UPLOAD_FOLDER'],image_filename))
-        else : 
-            flash("invalid file")
-            return redirect(url_for("Requesthelp"))
+            upload_result = cloudinary.uploader.upload(file)
+            image_url = upload_result['secure_url']
 
         cur = mysql.connection.cursor()
         try:
             cur.execute("INSERT INTO Requesthelp (subject, description, user_id,image_path) VALUES (%s, %s, %s,%s)",
-                        (subject, description, current_user.id,image_filename))
+                        (subject, description, current_user.id,image_url))
             mysql.connection.commit()
             flash("Succesfully posted request!")
             return redirect(url_for('main.home'))
