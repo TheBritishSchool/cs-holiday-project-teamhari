@@ -1,11 +1,13 @@
 import MySQLdb
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 HOST = os.environ.get("MYSQL_HOST")
 USER = os.environ.get("MYSQL_USER")
 PASSWORD = os.environ.get("MYSQL_PASSWORD")
 DATABASE = os.environ.get("MYSQL_DATABASE")
-PORT = os.environ.get("MYSQL_PORT")
+PORT = int(os.environ.get('MYSQL_PORT', 3306))
 
 def test_connection():
     try:
