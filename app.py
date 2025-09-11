@@ -8,19 +8,23 @@ from flask_login import UserMixin
 import os
 from werkzeug.utils import secure_filename
 from flask import flash
+from dotenv import load_dotenv
+load_dotenv()
+
 
 # Database credentials
-HOST = 'bkfanudhuvqg1xriyhdm-mysql.services.clever-cloud.com'
-USER = 'uraexz57rm9ktsv8'
-PASSWORD = 'XXeJ8prWdlq5SfsiFxwy'
-DATABASE = 'bkfanudhuvqg1xriyhdm'
-PORT = 3306
+HOST = os.environ.get("MYSQL_HOST")
+USER = os.environ.get("MYSQL_USER")
+PASSWORD = os.environ.get("MYSQL_PASSWORD")
+DATABASE = os.environ.get("MYSQL_DATABASE")
+PORT = os.environ.get("MYSQL_PORT")
 UPLOAD_FOLDER = 'static/uploads'
 
 app = Flask(__name__)
 
 # Secret key for session management
-app.secret_key = 'supersecretkey'
+app.secret_key = app.secret_key = os.environ.get("SECRET_KEY", "fallback_secret_for_local")
+
 
 # Database configuration
 app.config['MYSQL_HOST'] = HOST
@@ -33,8 +37,8 @@ app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False  
-app.config['MAIL_USERNAME'] = "tbsforums@gmail.com"    
-app.config['MAIL_PASSWORD'] = "cxnc avvt tauv wrwd"      
+app.config['MAIL_USERNAME'] = os.environ.get("MAIL_USERNAME")   
+app.config['MAIL_PASSWORD'] = os.environ.get("MAIL_PASSWORD")     
 
 mail.init_app(app)
 

@@ -1,11 +1,11 @@
 import MySQLdb
+import os
 
-# Replace these values with your actual database credentials
-HOST = 'bkfanudhuvqg1xriyhdm-mysql.services.clever-cloud.com'
-USER = 'uraexz57rm9ktsv8'
-PASSWORD = 'XXeJ8prWdlq5SfsiFxwy'
-DATABASE = 'bkfanudhuvqg1xriyhdm'
-PORT = 3306
+HOST = os.environ.get("MYSQL_HOST")
+USER = os.environ.get("MYSQL_USER")
+PASSWORD = os.environ.get("MYSQL_PASSWORD")
+DATABASE = os.environ.get("MYSQL_DATABASE")
+PORT = os.environ.get("MYSQL_PORT")
 
 def test_connection():
     try:
