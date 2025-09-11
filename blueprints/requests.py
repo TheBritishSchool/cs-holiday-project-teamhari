@@ -24,9 +24,13 @@ def Requesthelp():
         description = request.form['description']
         file = request.files['image']
         image_filename = None
+
         if file and allowed_file(file.filename): 
             image_filename = secure_filename(file.filename)
             file.save(os.path.join(current_app.config['UPLOAD_FOLDER'],image_filename))
+        else : 
+            flash("invalid file")
+            return redirect(url_for("Requesthelp"))
 
         cur = mysql.connection.cursor()
         try:

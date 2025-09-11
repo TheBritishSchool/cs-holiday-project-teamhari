@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for
-from extensions import mysql, bcrypt, login_manager
-from blueprints.auth import auth, User
+from extensions import mysql, bcrypt, login_manager,mail
+from blueprints.auth import auth
 from blueprints.requests import requests_bp
 from flask_login import login_required, current_user
 from flask_mail import Mail, Message
@@ -36,8 +36,7 @@ app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_USERNAME'] = "tbsforums@gmail.com"    
 app.config['MAIL_PASSWORD'] = "cxnc avvt tauv wrwd"      
 
-
-mail = Mail(app)
+mail.init_app(app)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -299,6 +298,9 @@ def editprofile():
         if image and image.filename != "":
             image_filename = secure_filename(image.filename)
             image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
+        else: 
+            flash("invalid file")
+            return redirect("editprofile")
 
         cur.execute("""
             UPDATE Tutorprofiles
