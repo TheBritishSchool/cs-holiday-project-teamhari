@@ -10,7 +10,14 @@ from werkzeug.utils import secure_filename
 from flask import flash
 from dotenv import load_dotenv
 load_dotenv()
+import cloudinary
+import cloudinary.uploader
 
+cloudinary.config( 
+  cloud_name = os.getenv('CLOUDINARY_URL').split('@')[-1], 
+  api_key = os.getenv('CLOUDINARY_URL').split('//')[1].split(':')[0],
+  api_secret = os.getenv('CLOUDINARY_URL').split(':')[2].split('@')[0]
+)
 
 # Database credentials
 HOST = os.environ.get("MYSQL_HOST")
@@ -259,8 +266,8 @@ def applytutor():
     image = request.files.get('image')
     image_filename = None
     if image and image.filename != "":
-        image_filename = secure_filename(image.filename)
-        image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
+        upload_result = cloudinary.uploader.upload(image)
+        image_url = upload_result['secure_url']
     
     if current_user.year < 10 or current_user.year > 13:
         flash("Only students in Years 10 to 13 can apply to be a tutor.", "error")
@@ -268,7 +275,7 @@ def applytutor():
     
     cur = mysql.connection.cursor()
     cur.execute("INSERT INTO Tutorprofiles(user_id,username,bio,email,subjects,userimage_path,timing)  VALUES(%s,%s,%s,%s,%s,%s,%s)",
-                 (current_user.id,current_user.username,bio,current_user.email,subjects,image_filename,timing))
+                 (current_user.id,current_user.username,bio,current_user.email,subjects,image_url,timing))
     mysql.connection.commit()
     cur.close()
     flash("Successfully made profile!")
@@ -300,8 +307,8 @@ def editprofile():
         image_filename = profile[5]  
 
         if image and image.filename != "":
-            image_filename = secure_filename(image.filename)
-            image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
+            upload_result = cloudinary.uploader.upload(image)
+            image_url = upload_result['secure_url']
         else: 
             flash("invalid file")
             return redirect("editprofile")
@@ -310,7 +317,7 @@ def editprofile():
             UPDATE Tutorprofiles
             SET bio=%s, subjects=%s, userimage_path=%s, timing=%s
             WHERE user_id=%s
-        """, (bio, subjects, image_filename, timing, current_user.id))
+        """, (bio, subjects, image_url, timing, current_user.id))
         mysql.connection.commit()
 
         cur.execute("SELECT * FROM Tutorprofiles WHERE user_id=%s", (current_user.id,))
