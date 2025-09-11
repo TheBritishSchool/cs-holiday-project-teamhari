@@ -70,7 +70,7 @@ def register():
         password = request.form['password']
         confirm = request.form['confirm_password']
         year = request.form['year']
-        ALLOWED_DOMAIN = "@gmail.com"
+        ALLOWED_DOMAIN = "@tbs.edu.np"
 
         email = request.form.get("email")
 
