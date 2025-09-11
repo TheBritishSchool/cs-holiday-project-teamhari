@@ -280,6 +280,41 @@ def tutorprofiles():
     cur.close()
     return render_template("tutordashboard.html",tutors=tutors)
 
+@app.route("/editprofile", methods=["GET","POST"])
+@login_required
+def editprofile():
+    cur = mysql.connection.cursor()
+
+    
+    cur.execute("SELECT * FROM Tutorprofiles WHERE user_id=%s", (current_user.id,))
+    profile = cur.fetchone()
+
+    if request.method == "POST":
+        bio = request.form.get("BIO", profile[2])  
+        subjects = request.form.get("subjects", profile[4])
+        timing = request.form.get("timings", profile[6]) 
+        image = request.files.get("image")
+        image_filename = profile[5]  
+
+        if image and image.filename != "":
+            image_filename = secure_filename(image.filename)
+            image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
+
+        cur.execute("""
+            UPDATE Tutorprofiles
+            SET bio=%s, subjects=%s, userimage_path=%s, timing=%s
+            WHERE user_id=%s
+        """, (bio, subjects, image_filename, timing, current_user.id))
+        mysql.connection.commit()
+
+        cur.execute("SELECT * FROM Tutorprofiles WHERE user_id=%s", (current_user.id,))
+        profile = cur.fetchone()
+        flash("Saved changes")
+        return redirect(url_for("tutor"))
+
+    cur.close()
+    return render_template("editprofile.html", profile=profile)
+
 # Run the Flask app
 if __name__ == '__main__':
     with app.app_context():
