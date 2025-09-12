@@ -325,6 +325,10 @@ def editprofile():
     cur.close()
     return render_template("editprofile.html", profile=profile)
 
+@app.route("/ping")
+def ping():
+    return "OK", 200
+
 # Run the Flask app
 if __name__ == '__main__':
     with app.app_context():
