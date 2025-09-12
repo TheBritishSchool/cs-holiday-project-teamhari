@@ -17,7 +17,7 @@
         <label for = "image">Profile Image:</label>
         {% if profile[5] %}
             <div style="margin-bottom:10px;">
-                <img src="{{ url_for('static', filename='uploads/' ~ profile[5]) }}" 
+                <img src="{{profile[5]}}" 
                      alt="Current Profile Image" 
                      style="max-width:200px; border-radius:10px; display:block;">
             </div>

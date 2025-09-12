@@ -18,8 +18,8 @@
     
     {% if profile[5] %}
     <div style="flex: 0 0 150px;">
-        <img src="{{ url_for('static', filename='uploads/' ~ profile[5] )}}" 
-             alt="Tutor Profile Picture" 
+        <img src="{{profile[5]}}" 
+             alt="Profile Picture" 
              style="width: 150px; height: 150px; border-radius: 10px; object-fit: cover;">
     </div>
     {% endif %}

@@ -17,7 +17,7 @@
 
         {% if req.image_path %}
         <div class="thread-image">
-            <img src="{{ url_for('static', filename='uploads/' ~ req.image_path) }}" alt="Request Image">
+            <img src="{req.image_path}}" alt="Request Image">
         </div>
         {% endif %}
 
