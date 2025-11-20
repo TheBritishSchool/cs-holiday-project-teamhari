@@ -333,6 +333,7 @@ def ping():
 def test_email():
     msg = Message(
         subject="MailerSend Test",
+        sender = "test-p7kx4xw9kj7g9yjr.mlsender.net",
         recipients=["tatsydhakal@gmail.com"],
         body="MailerSend SMTP is working."
     )
