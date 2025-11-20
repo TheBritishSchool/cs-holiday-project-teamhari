@@ -40,8 +40,8 @@ app.config['MYSQL_PASSWORD'] = PASSWORD
 app.config['MYSQL_DB'] = DATABASE
 app.config['MYSQL_PORT'] = PORT
 
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
+app.config['MAIL_SERVER'] = 'smtp.mailersend.net'
+app.config['MAIL_PORT'] = 2525
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False  
 app.config['MAIL_USERNAME'] = os.environ.get("MAIL_USERNAME")   
@@ -328,6 +328,16 @@ def editprofile():
 @app.route("/ping")
 def ping():
     return "OK", 200
+
+@app.route("/test-email")
+def test_email():
+    msg = Message(
+        subject="MailerSend Test",
+        recipients=["tatsydhakal@gmail.com"],
+        body="MailerSend SMTP is working."
+    )
+    mail.send(msg)
+    return "Email sent!"
 
 # Run the Flask app
 if __name__ == '__main__':
