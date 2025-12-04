@@ -248,6 +248,8 @@ def tutor():
         return render_template("applytutor.html")
 
 
+from MySQLdb import IntegrityError
+
 @app.route("/applytutor", methods=["POST"])
 @login_required
 def applytutor():
@@ -266,15 +268,30 @@ def applytutor():
         return redirect(url_for("tutor"))
 
     cur = mysql.connection.cursor()
-    cur.execute("""
-        INSERT INTO Tutorprofiles(user_id, username, bio, email, subjects, userimage_path, timing)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
-    """, (current_user.id, current_user.username, bio, current_user.email, subjects, image_url, timing))
-    mysql.connection.commit()
-    cur.close()
 
-    flash("Successfully made profile!")
+    try:
+        cur.execute("""
+            INSERT INTO Tutorprofiles(user_id, username, bio, email, subjects, userimage_path, timing)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (current_user.id, current_user.username, bio, current_user.email, subjects, image_url, timing))
+        mysql.connection.commit()
+
+    except IntegrityError:
+        # This triggers if user_id is already in table and UNIQUE(user_id) prevents duplicates
+        flash("You already have a tutor profile. You can only create one.", "error")
+        mysql.connection.rollback()
+
+    except Exception as e:
+        # Generic fallback so your app doesn't break
+        mysql.connection.rollback()
+        flash("Something went wrong while creating your profile. try again", "error")
+        print("ERROR:", e)
+
+    finally:
+        cur.close()
+
     return redirect(url_for("tutor"))
+
 
 
 @app.route("/tutorprofiles")
